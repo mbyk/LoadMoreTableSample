@@ -26,7 +26,6 @@ class ViewController: UIViewController {
     
     private var count = 0
 
-    
     @IBOutlet weak var tableView: UITableView! {
         didSet {
             tableView.delegate = self
@@ -35,23 +34,13 @@ class ViewController: UIViewController {
     }
 
     let sectionTypes: [SectionType] = [.main, .footer]
-    var hidesFooter = false
-    var isRequesting = false
     
-    var isScrolling = false {
-        didSet {
-            if !isScrolling && pendingProcess != nil {
-                pendingProcess?()
-                pendingProcess = nil
-            }
-        }
-    }
-    
-    var pendingProcess: (() -> Void)?
-    var sourceObjects = [Any]()
-    
-    var fetchSourceObjects: (_ completion: @escaping (_ sourceObjects: [Any], _ hasNext: Bool) -> ()) -> () = { _ in  }
-    
+    lazy var requestObject: LoadMoreRequestObject<String> = {
+        var _requestObject = LoadMoreRequestObject<String>()
+        _requestObject.totalCount = 101
+        _requestObject.limit = 50
+        return _requestObject
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -63,9 +52,9 @@ class ViewController: UIViewController {
         tableView.refreshControl?.addTarget(self, action: #selector(refresh), for: .valueChanged)
 
 
-        fetchSourceObjects = { [weak self] completion in
+        requestObject.fetchSourceObjects = { [weak self] completion in
             var newNumbers = [Int]()
-            for _ in 0..<50 {
+            for _ in 0..<self!.requestObject.limit {
                 self?.count += 1
                 newNumbers.append(self?.count ?? 0)
             }
@@ -84,17 +73,12 @@ class ViewController: UIViewController {
                     self?.tableView.refreshControl?.endRefreshing()
                 }
                 
-                if self!.count > 200 {
-                    delay(refreshing ? 0.3 : 0) {
-                        completion(newNumbers.map { "sample \($0)" }, false)
-                    }
-                } else {
-                    delay(refreshing ? 0.3 : 0) {
-                        completion(newNumbers.map { "sample \($0)" }, true)
-                    }
-                }
+                self?.requestObject.currentPage += 1
                 
-
+                delay(refreshing ? 0.3 : 0) {
+                    completion(newNumbers.map { "sample \($0)" }, self!.requestObject.hasNext)
+                }
+               
             }
         }
         
@@ -116,100 +100,6 @@ class ViewController: UIViewController {
         refreshData(immediately: false)
     }
 
-    
-    func refreshData(immediately: Bool) {
-        sourceObjects.removeAll()
-        
-        if immediately {
-            isScrolling = false
-        }
-        
-        DispatchQueue.main.async {
-            if immediately {
-                self.tableView.reloadData()
-                self.updateFooter(show: true)
-            } else {
-                self.loadMore(reload: true)
-            }
-        }
-    }
-    
-    func updateTable(reload: Bool, hasNext: Bool) {
-        DispatchQueue.main.async {
-//            UIView.setAnimationsEnabled(false)
-            
-            if let mainSection = self.sectionTypes.index(of: .main) {
-                let newDataCount = self.sourceObjects.count
-                let currentDataCount = self.tableView.numberOfRows(inSection: mainSection)
-                if currentDataCount < newDataCount {
-                    self.tableView.insertRows(at: Array(currentDataCount..<newDataCount).map { IndexPath(row: $0, section: mainSection) }, with: .none)
-                    
-                } else {
-                    self.tableView.deleteRows(at: Array(newDataCount..<currentDataCount).map { IndexPath(row: $0, section: mainSection) }, with: .none)
-                }
-                
-                if reload {
-                    self.tableView.reloadRows(at: Array(0..<newDataCount).map { IndexPath(row: $0, section: mainSection) }, with: .none)
-                }
-            }
-            
-//            UIView.setAnimationsEnabled(true)
-            
-            if !hasNext {
-                self.updateFooter(show: false)
-            } else {
-                self.updateFooter(show: true)
-            }
-        }
-    }
-    
-    func updateFooter(show: Bool) {
-        guard pendingProcess == nil else { return }
-        
-        guard let footerSection = sectionTypes.index(of: .footer) else { return }
-        
-        DispatchQueue.main.async {
-            if show && self.hidesFooter {
-                self.hidesFooter = false
-                self.tableView.insertRows(at: [IndexPath(row: 0, section: footerSection)], with: .none)
-            } else if !show && !self.hidesFooter {
-                self.hidesFooter = true
-                self.tableView.deleteRows(at: [IndexPath(row: 0, section: footerSection)], with: .none)
-            } else if show && !self.hidesFooter {
-                self.tableView.reloadData()
-            }
-        }
-    }
-    
-    func loadMore(reload: Bool = false) {
-        guard !isRequesting else { return }
-        isRequesting = true
-        
-        let oldDataCount = sourceObjects.count
-        
-        DispatchQueue.global().async {
-            self.fetchSourceObjects() { [weak self] sourceObjects, hasNext in
-                guard let strongSelf = self else { return }
-                
-                if oldDataCount == strongSelf.sourceObjects.count {
-                    strongSelf.sourceObjects += sourceObjects
-                }
-                
-                if strongSelf.isScrolling == true {
-                    if strongSelf.pendingProcess == nil {
-                        strongSelf.pendingProcess = {
-                            strongSelf.updateTable(reload: reload, hasNext: hasNext)
-                        }
-                    }
-                } else {
-                    strongSelf.updateTable(reload: reload, hasNext: hasNext)
-                }
-                
-                strongSelf.isRequesting = false
-            }
-        }
-    }
-    
 }
 
 extension ViewController: UITableViewDelegate {
@@ -226,9 +116,9 @@ extension ViewController: UITableViewDataSource {
         let sectionType = sectionTypes[section]
         switch sectionType {
         case .main:
-            return sourceObjects.count
+            return requestObject.sourceObjects.count
         case .footer:
-            return (hidesFooter ? 0 : 1)
+            return (requestObject.hidesFooter ? 0 : 1)
         }
     }
 
@@ -258,7 +148,7 @@ extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
         if sectionTypes[indexPath.section] == .footer {
-            loadMore()
+            loadMore(reload: false)
         }
         
     }
@@ -268,16 +158,33 @@ extension ViewController: UITableViewDataSource {
 extension ViewController {
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        isScrolling = true
+        requestObject.isScrolling = true
     }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
-            isScrolling = false
+            requestObject.isScrolling = false
         }
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        isScrolling = false
+        requestObject.isScrolling = false
     }
+}
+
+extension ViewController: LoadMoreProvider {
+    
+    var loadMoreDataView: UITableView {
+        return tableView
+    }
+    
+    var loadMoreFooterSection: Int {
+        return 1
+    }
+    
+    
+    var loadMoreMainSection: Int {
+        return 0
+    }
+
 }

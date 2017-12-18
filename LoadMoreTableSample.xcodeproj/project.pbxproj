@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		423995031FE803A400CCE089 /* LoadMoreProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423995021FE803A400CCE089 /* LoadMoreProvider.swift */; };
 		42A80CCA1FE561AD0025E162 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A80CC91FE561AD0025E162 /* AppDelegate.swift */; };
 		42A80CCC1FE561AD0025E162 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A80CCB1FE561AD0025E162 /* ViewController.swift */; };
 		42A80CCF1FE561AD0025E162 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 42A80CCD1FE561AD0025E162 /* Main.storyboard */; };
@@ -15,6 +16,7 @@
 		42A80CDF1FE561AD0025E162 /* LoadMoreTableSampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A80CDE1FE561AD0025E162 /* LoadMoreTableSampleTests.swift */; };
 		42A80CEB1FE564060025E162 /* LoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A80CE91FE564060025E162 /* LoadingCell.swift */; };
 		42A80CEC1FE564060025E162 /* LoadingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42A80CEA1FE564060025E162 /* LoadingCell.xib */; };
+		42A80CEE1FE7EBE30025E162 /* LoadMoreRequestObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A80CED1FE7EBE30025E162 /* LoadMoreRequestObject.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -28,6 +30,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		423995021FE803A400CCE089 /* LoadMoreProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadMoreProvider.swift; sourceTree = "<group>"; };
 		42A80CC61FE561AD0025E162 /* LoadMoreTableSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LoadMoreTableSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		42A80CC91FE561AD0025E162 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		42A80CCB1FE561AD0025E162 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -40,6 +43,7 @@
 		42A80CE01FE561AD0025E162 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		42A80CE91FE564060025E162 /* LoadingCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingCell.swift; sourceTree = "<group>"; };
 		42A80CEA1FE564060025E162 /* LoadingCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoadingCell.xib; sourceTree = "<group>"; };
+		42A80CED1FE7EBE30025E162 /* LoadMoreRequestObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadMoreRequestObject.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +93,8 @@
 				42A80CD51FE561AD0025E162 /* Info.plist */,
 				42A80CE91FE564060025E162 /* LoadingCell.swift */,
 				42A80CEA1FE564060025E162 /* LoadingCell.xib */,
+				42A80CED1FE7EBE30025E162 /* LoadMoreRequestObject.swift */,
+				423995021FE803A400CCE089 /* LoadMoreProvider.swift */,
 			);
 			path = LoadMoreTableSample;
 			sourceTree = "<group>";
@@ -206,6 +212,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				42A80CEB1FE564060025E162 /* LoadingCell.swift in Sources */,
+				423995031FE803A400CCE089 /* LoadMoreProvider.swift in Sources */,
+				42A80CEE1FE7EBE30025E162 /* LoadMoreRequestObject.swift in Sources */,
 				42A80CCC1FE561AD0025E162 /* ViewController.swift in Sources */,
 				42A80CCA1FE561AD0025E162 /* AppDelegate.swift in Sources */,
 			);
@@ -411,6 +419,7 @@
 				42A80CE51FE561AD0025E162 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		42A80CE61FE561AD0025E162 /* Build configuration list for PBXNativeTarget "LoadMoreTableSampleTests" */ = {
 			isa = XCConfigurationList;
@@ -419,6 +428,7 @@
 				42A80CE81FE561AD0025E162 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
